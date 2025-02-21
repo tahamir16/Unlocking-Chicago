@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Compass</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        margin: 0;
+        background-color: #f0f0f0;
+      }
+      .compass {
+        width: 300px;
+        height: 300px;
+        background: url("compass-rose.png") no-repeat center;
+        background-size: contain;
+        transform-origin: center;
+      }
+      .distance {
+        margin-top: 20px;
+        font-size: 20px;
+        color: #333;
+      }
+      .back-button {
+        margin-top: 20px;
+        padding: 10px 20px;
+        background-color: #168ce1;
+        color: #fff;
+        border: none;
+        border-radius: 5px;
+        font-size: 16px;
+        cursor: pointer;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="compass" class="compass"></div>
+    <div id="distance" class="distance"></div>
+    <button class="back-button" onclick="goBack()">Back</button>
+
+    <script>
+      // Parse the query parameters for landmark coordinates
+      const urlParams = new URLSearchParams(window.location.search);
+      const landmarkLat = parseFloat(urlParams.get("lat"));
+      const landmarkLng = parseFloat(urlParams.get("lng"));
+
+      let userLat = null;
+      let userLng = null;
+
+      // Function to calculate the distance between two points
+      function calculateDistance(lat1, lon1, lat2, lon2) {
+        const R = 6371; // Radius of Earth in km
+        const dLat = ((lat2 - lat1) * Math.PI) / 180;
+        const dLon = ((lon2 - lon1) * Math.PI) / 180;
+        const a =
+          Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+          Math.cos((lat1 * Math.PI) / 180) *
+            Math.cos((lat2 * Math.PI) / 180) *
+            Math.sin(dLon / 2) *
+            Math.sin(dLon / 2);
+        const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+        return R * c * 0.621371; // Convert to miles
+      }
+
+      // Function to calculate the bearing between two points
+      function calculateBearing(lat1, lon1, lat2, lon2) {
+        const dLon = ((lon2 - lon1) * Math.PI) / 180;
+        const y = Math.sin(dLon) * Math.cos((lat2 * Math.PI) / 180);
+        const x =
+          Math.cos((lat1 * Math.PI) / 180) * Math.sin((lat2 * Math.PI) / 180) -
+          Math.sin((lat1 * Math.PI) / 180) *
+            Math.cos((lat2 * Math.PI) / 180) *
+            Math.cos(dLon);
+        return (Math.atan2(y, x) * 180) / Math.PI; // Convert to degrees
+      }
+
+      // Update the compass and distance
+      function updateCompass(event) {
+        if (!userLat || !userLng) return;
+
+        const bearing = calculateBearing(
+          userLat,
+          userLng,
+          landmarkLat,
+          landmarkLng
+        );
+        const distance = calculateDistance(
+          userLat,
+          userLng,
+          landmarkLat,
+          landmarkLng
+        );
+
+        // Update compass rotation
+        const compassElement = document.getElementById("compass");
+        const heading = event.alpha || 0; // Device heading
+        const rotation = bearing - heading;
+        compassElement.style.transform = `rotate(${rotation}deg)`;
+
+        // Update distance display
+        document.getElementById("distance").textContent = `${distance.toFixed(
+          1
+        )} miles`;
+      }
+
+      // Get user's location
+      navigator.geolocation.watchPosition(
+        (position) => {
+          userLat = position.coords.latitude;
+          userLng = position.coords.longitude;
+        },
+        (error) => console.error("Error getting location", error),
+        { enableHighAccuracy: true }
+      );
+
+      // Listen for device orientation changes
+      if (window.DeviceOrientationEvent) {
+        window.addEventListener("deviceorientation", updateCompass, true);
+      }
+
+      // Back button functionality
+      function goBack() {
+        window.history.back();
+      }
+    </script>
+  </body>
+</html>

@@ -1,0 +1,113 @@
+[
+    {
+    "id": "1",
+    "neighborhood": "Museum Campus",
+    "name": "Soldier Field",
+    "image": "soldierfield.jpg",
+    "description": "Soldier Field is a multi-purpose stadium on the Near South Side of Chicago, Illinois, United States. Opened in 1924 and reconstructed in 2003, the stadium has served as the home of the Chicago Bears from the National Football League (NFL) since 1971, as well as Chicago Fire FC of Major League Soccer (MLS) from 1998 to 2006 and since 2020. It also regularly hosts stadium concerts and other large crowd events. The stadium has a football capacity of 62,500, making it the smallest stadium in the NFL. Soldier Field is also the oldest stadium established in the NFL and 3rd oldest in MLS. The stadium's interior was rebuilt as part of a major renovation project in 2002, which modernized the facility but lowered its seating capacity, eventually causing it to be delisted as a National Historic Landmark in 2006. Soldier Field has served as the home venue for a number of other sports teams in its history, including the Chicago Cardinals of the NFL and University of Notre Dame football. It hosted the 1994 FIFA World Cup, the 1999 FIFA Women's World Cup, and multiple CONCACAF Gold Cup championships. In 1968, it hosted the inaugural World Games of the Special Olympics, as well as its second World Games in 1970. Other historic events have included large rallies with speeches, including by Amelia Earhart, Franklin D. Roosevelt, and Martin Luther King Jr.",
+    "coordinates": [41.86261694649829, -87.61669827116371],
+    "locked": false
+    },
+    {
+    "id": "2",
+    "neighborhood": "West Loop",
+    "name": "Union Station",
+    "image": "union.jpg",
+    "description": "Chicago Union Station is an intercity and commuter rail terminal located in the West Loop neighborhood of the Near West Side of Chicago. Amtrak's flagship station in the Midwest, Union Station is the terminus of eight national long-distance routes and eight regional corridor routes. Six Metra commuter lines also terminate here. Union Station is just west of the Chicago River between West Adams Street and West Jackson Boulevard, adjacent to the Chicago Loop. Including approach and storage tracks, it covers about nine and a half city blocks (mostly underground, beneath streets and skyscrapers, some built with the earliest usage of railway air rights). The present station opened in 1925, replacing an earlier union station on this site built in 1881. The station is the fourth-busiest rail station in the United States, after Pennsylvania Station, Grand Central Terminal, and Jamaica station in New York City,[3] and the busiest outside of the Northeast Corridor. It handles about 140,000 passengers on an average weekday (including 10,000 Amtrak passengers).[4] It has Bedford limestone Beaux-Arts facades, and an interior with massive Corinthian columns, marble floors, and a Great Hall, highlighted by brass lamps.[5] The station connects to multiple transit authorities including the Chicago Transit Authority bus and Chicago L lines, Metra, Pace, Greyhound, and more either within the station or within walking distance.",
+    "coordinates": [41.87881501763317, -87.63977227116388],
+    "locked": false
+    },
+    {
+      "id": "3",
+      "neighborhood": "Little Italy",
+      "name": "Engine 18 Chicago Fire",
+      "image": "chicagoFire.jpg",
+      "description": "The historic Engine 18 firehouse.",
+      "coordinates": [41.8659, -87.6523],
+      "locked": false
+    },
+    {
+      "id": "4",
+      "neighborhood": "Museum Campus",
+      "name": "Alder Planetarium",
+      "image": "museumCampus.jpg",
+      "description": "The Adler Planetarium is a public museum in Chicago, Illinois, dedicated to astronomy and astrophysics. It was founded in 1930 by local businessman Max Adler. Located on the northeastern tip of Northerly Island on Lake Michigan, the Adler Planetarium was the first planetarium in the United States. It is part of Chicago's Museum Campus, which includes the John G. Shedd Aquarium and The Field Museum. The Planetarium's mission is to inspire exploration and understanding of the universe. The Adler Planetarium opened to the public on May 12, 1930.[3] Its architect, Ernest A. Grunsfeld Jr., was awarded the gold medal of the Chicago chapter of the American Institute of Architects in 1931 for its design.[4] In 1987, it was declared a National Historic Landmark.[2][5] The Adler has three theaters, space science exhibitions, including the Gemini 12 space capsule, and a collection of antique scientific instruments and print materials. In addition, the Adler Planetarium hosts the Doane Observatory, a research-active public observatory.",
+      "coordinates": [41.8663, -87.6068],
+      "locked": false
+    },
+    {
+        "id": "5",
+        "neighborhood": "Little Italy",
+        "name": "Jim's Original",
+        "image": "jims.jpg",
+        "description": "NA",
+        "coordinates": [41.865770500190735, -87.64519196775782],
+        "locked": false
+    },
+    {
+        "id": "6",    
+        "neighborhood": "Loop",
+        "name": "Buddy Guy's Legends",
+        "image": "BGLegends.jpg",
+        "description": "NA",
+        "coordinates": [41.872999005514146, -87.62617836441699],
+        "locked": false
+    },
+    {
+        "id": "7",
+        "neighborhood": "Old Town",
+        "name": "The Second City",
+        "image": "secondcity.jpg",
+        "description": "NA",
+        "coordinates": [41.91122084556429, -87.63536259556223],
+        "locked": true
+    },
+    {
+        "id": "8",
+        "neighborhood": "Museum Campus",
+        "name": "Northerly Island - Southern Tip",
+        "image": "NISouthernTip.webp",
+        "description": "Northerly Island (also Northerly Island Park) is a 119-acre (48 ha) human-made peninsula and park located on Chicago's Lake Michigan lakefront.[1] Originally constructed in 1925, Northerly Island was the former site of the Century of Progress world's fair and later Meigs Field airport and, since Meigs Field's closure, has been a recreational area part of Chicago's Museum Campus. It is the site of the Adler Planetarium, the Huntington Bank Pavilion (a semi-temporary concert venue), the Northerly Island Natural Area, the 12th Street Beach and numerous art installations. Per its name, Northerly Island was constructed as an island, but is connected to the lakefront by a causeway at the northern end carrying Solidarity Drive to the planetarium.[2]",
+        "coordinates": [41.85330738518701, -87.6085833165336],
+        "locked": false
+    },
+    {
+      "id": "9",
+      "neighborhood": "South Loop",
+      "name": "Glessner House",
+      "image": "glessnerHouse.jpg",
+      "description": "NA",
+      "coordinates": [41.85773130764835, -87.62122008121241],
+      "locked": true
+    },
+    {
+      "id": "10",
+      "neighborhood": "Lake View",
+      "name": "Belmont-Sheffield Bank & Trust",
+      "image": "home.jpg",
+      "description": "NA",
+      "coordinates": [41.93968402905355, -87.65444127116459],
+      "locked": true
+    },
+    {
+      "id": "11",
+      "neighborhood": "Little Italy",
+      "name": "UIC Pavilion",
+      "image": "pavilion.webp",
+      "description": "NA",
+      "coordinates": [41.874742016869305, -87.65614754232725],
+      "locked": true
+    },
+    {
+      "id": "12",
+      "neighborhood": "Little Italy",
+      "name": "University of Illinois Chicago",
+      "image": "uic.webp",
+      "description": "NA",
+      "coordinates": [41.87188051360803, -87.6492504801078],
+      "locked": true
+    }    
+
+  
+  ]
+  

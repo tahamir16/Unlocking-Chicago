@@ -1,0 +1,674 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+      integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+      crossorigin=""
+    />
+    <script
+      src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+      integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+      crossorigin=""
+    ></script>
+    <script src="https://unpkg.com/@turf/turf@6/turf.min.js"></script>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Unlocking Chicago</title>
+    <style>
+      /* Basic reset */
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      /* App container */
+      body,
+      html {
+        font-family: Arial, sans-serif;
+        height: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background-color: #f0f0f0;
+      }
+
+      .app-container {
+        width: 375px;
+        height: 667px;
+        border: 2px solid #333;
+        border-radius: 20px;
+        background-color: #fff;
+        overflow: hidden;
+        box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
+        position: relative;
+      }
+
+      /* Header */
+      .header {
+        height: 0px;
+        background-color: #f3f3f3;
+
+        display: flex;
+        justify-content: left;
+        padding-left: 20px;
+        align-items: center;
+        font-size: 18px;
+        font-weight: bold;
+        box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.3);
+        z-index: 1;
+      }
+
+      /* Main content area */
+      .main-content {
+        padding: 0px;
+        flex-grow: 1;
+        overflow-y: auto;
+      }
+
+      /* Leaflet Map */
+      #map {
+        width: 100%;
+        height: 100%;
+        position: absolute;
+        z-index: 0;
+      }
+
+      .neighborhood-label {
+        background-color: transparent;
+        border-style: none;
+        box-shadow: none;
+        border-radius: 4px;
+        padding: 2px 5px;
+        font-size: 14px;
+        font-weight: bold;
+        color: #333;
+      }
+
+      .userSettings {
+        width: 40px;
+        height: 40px;
+        background-color: #168ce1;
+        position: absolute;
+        right: 0;
+        top: 0;
+        margin: 15px;
+        border-radius: 15px;
+        cursor: pointer;
+      }
+
+      .userSettings img {
+        width: 40px; /* Adjust size as needed */
+        height: 40px;
+
+        object-fit: cover; /* Ensures the image maintains aspect ratio */
+        border-radius: 11px;
+        box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.3);
+      }
+
+      /* Footer */
+      .footer {
+        height: 712px;
+        background-color: #e9e9e9;
+        color: #1e1e1e;
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-start;
+        align-items: center;
+        font-size: 14px;
+        padding: 0;
+        box-shadow: 0px -4px 6px rgba(0, 0, 0, 0.3);
+        position: absolute;
+        bottom: -582px; /* Initial hidden part */
+        transition: bottom 0.4s ease; /* Slide up animation */
+        width: 100%;
+        border-radius: 20px;
+      }
+
+      /* Footer active state */
+      .footer.active {
+        bottom: 0; /* Fully visible when active */
+      }
+
+      .pull-bar {
+        width: 80px;
+        height: 8px;
+        background-color: #c6c6c6;
+        border-radius: 10px;
+        margin-top: 10px;
+        cursor: pointer;
+      }
+      #secondPullBar {
+        margin-top: 0px;
+      }
+
+      .footer-text {
+        font-size: 16px;
+        color: #333;
+        margin-top: 14px;
+        margin-bottom: 15px;
+        text-align: center;
+      }
+      .percentage {
+        font-size: 20px;
+        color: #168ce1;
+        font-weight: bold;
+      }
+      .percentage2 {
+        font-size: 20px;
+        color: #0d4d7b;
+        font-weight: bold;
+      }
+
+      .footer-buttons {
+        display: flex;
+        justify-content: space-around;
+        width: 95%;
+        margin-top: 0;
+        margin-bottom: 3px;
+      }
+
+      .footer-button {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background-color: #168ce1;
+        color: white;
+        width: 170px;
+        height: 55px;
+        font-size: 16px;
+        font-weight: bold;
+        border-radius: 15px;
+        text-align: center;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+      }
+
+      .footer-button.navy {
+        background-color: #0d4d7b;
+      }
+
+      .shadowBox {
+        width: 100%;
+        height: 10px;
+        background-color: #e9e9e9;
+        position: absolute;
+        top: 183px;
+        z-index: 5;
+        opacity: 100%;
+        box-shadow: 0px 8px 6px 0px rgba(0, 0, 0, 0.3);
+        border-bottom-left-radius: 20px;
+        border-bottom-right-radius: 20px;
+      }
+
+      #footBut2 {
+        background-color: #e9e9e9;
+        border-style: solid;
+        border-width: 4px;
+        border-color: #168ce1;
+        color: #168ce1;
+      }
+
+      /* Secondary map styling */
+      #secondary-map {
+        width: 100%;
+        height: 1050px;
+        margin-top: 15px;
+        border-radius: 0px;
+        box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.2);
+        z-index: 1;
+      }
+    </style>
+  </head>
+  <link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"
+  />
+  <body>
+    <div class="app-container">
+      <!-- Header -->
+      <div class="header">Unlocking Chicago</div>
+
+      <!-- Main Content -->
+      <div class="main-content">
+        <!-- Leaflet Map -->
+        <div id="map"></div>
+        <div class="userSettings" onclick="goToSettings()">
+          <img src="user.png" />
+        </div>
+      </div>
+
+      <!-- Footer Navigation -->
+      <div class="footer" id="footer">
+        <div class="pull-bar" onclick="toggleFooter()"></div>
+        <div class="footer-text">
+          You've Explored <span class="percentage">0.00%</span> of
+          <span class="neighborhood-name">Unknown</span>!
+        </div>
+
+        <div class="footer-buttons">
+          <div
+            class="footer-button"
+            id="landmarks-button"
+            onclick="goToLandmarks()"
+          >
+            8/13 Landmarks
+          </div>
+          <div
+            class="footer-button"
+            id="leaderboard-button"
+            onclick="goToLeaderboard()"
+          >
+            #3 Leaderboard
+          </div>
+        </div>
+        <!-- Secondary Map Tile -->
+        <div class="footer-text">
+          You've Explored <span class="percentage2">0.63%</span> of Chicago!
+        </div>
+        <div class="pull-bar" id="secondPullBar" onclick="toggleFooter()"></div>
+        <div class="shadowBox"></div>
+        <div id="secondary-map"></div>
+      </div>
+    </div>
+
+    <!-- Leaflet JavaScript -->
+    <script>
+      // Initialize the main map
+      var map = L.map("map").setView([0, 0], 18); // Centered on Chicago
+      L.tileLayer(
+        "https://api.maptiler.com/maps/streets-v2/{z}/{x}/{y}.png?key=Z4ewyOYv2NQn29nDtEoJ",
+        {
+          attribution:
+            '<a href="https://www.maptiler.com/copyright/" target="_blank">&copy; MapTiler</a> <a href="https://www.openstreetmap.org/copyright" target="_blank">&copy; OpenStreetMap contributors</a>',
+        }
+      ).addTo(map);
+
+      let exploredAreas = {
+        type: "FeatureCollection",
+        features: [],
+      }; // GeoJSON for explored areas
+      let boundariesData; // GeoJSON data for boundaries
+      let fullBoundariesLayer; // Layer for all boundaries
+      let landmarksData;
+      let updatedNeighborhoodLayer; // Layer for the current neighborhood with updates
+      let explorationLayer = L.geoJSON(null, {
+        style: {
+          fillColor: "rgba(0, 255, 0, 0.0)", // Transparent fill for explored areas
+          color: null, // No border
+          fillOpacity: 0.8,
+        },
+      }).addTo(map); // Layer for user exploration trail
+
+      const landmarkIconLocked = L.icon({
+        iconUrl: "landmark_icon_locked.png",
+        iconSize: [15, 30],
+        iconAnchor: [15, 29],
+      });
+
+      const landmarkIconUnlocked = L.icon({
+        iconUrl: "landmark_icon.png",
+        iconSize: [15, 30],
+        iconAnchor: [15, 30],
+      });
+
+      // Define a custom icon for the current location
+      const currentLocationIcon = L.icon({
+        iconUrl: "currloc.png", // Path to your current location icon
+        iconSize: [30, 30],
+        iconAnchor: [15, 15],
+        popupAnchor: [0, -15],
+      });
+
+      let userLocationMarker; // Variable to store the user location marker
+      let userCoords = { lat: 0, lng: 0 }; // Default location in Chicago
+      let currentNeighborhood = null; // Store the current neighborhood
+
+      // Fetch and display Boundaries.geojson
+      fetch("Boundaries.geojson")
+        .then((response) => {
+          if (!response.ok)
+            throw new Error("Failed to fetch Boundaries.geojson");
+          return response.json();
+        })
+        .then((data) => {
+          boundariesData = data; // Store the boundaries data
+          updateBoundariesWithDifference(); // Render initial boundaries
+        })
+        .catch((error) => console.error("Error loading GeoJSON:", error));
+
+      fetch("landmarks.json")
+        .then((response) => response.json())
+        .then((data) => {
+          landmarksData = data; // Store the landmarks data
+          addLandmarksToMap(); // Add landmarks to the map
+        })
+        .catch((error) => console.error("Error loading landmarks:", error));
+
+      // Function to add landmarks to the map
+      function addLandmarksToMap() {
+        if (!landmarksData) return;
+
+        landmarksData.forEach((landmark) => {
+          const marker = L.marker(
+            [landmark.coordinates[0], landmark.coordinates[1]],
+            {
+              icon: landmark.locked ? landmarkIconLocked : landmarkIconUnlocked,
+            }
+          )
+            .addTo(map)
+            .bindPopup(
+              `<b>${landmark.name}<br><img src="${landmark.image}" width="100">`
+            );
+
+          landmark.marker = marker; // Store the marker for updates
+        });
+      }
+
+      // Function to unlock landmarks when explored
+      function updateLandmarkIcons() {
+        if (!landmarksData) return;
+
+        landmarksData.forEach((landmark) => {
+          if (landmark.locked) {
+            const landmarkPoint = turf.point([
+              landmark.coordinates[1],
+              landmark.coordinates[0],
+            ]);
+
+            exploredAreas.features.forEach((exploredArea) => {
+              if (turf.booleanPointInPolygon(landmarkPoint, exploredArea)) {
+                landmark.locked = false; // Unlock the landmark
+                landmark.marker.setIcon(landmarkIconUnlocked); // Update the icon
+              }
+            });
+          }
+        });
+      }
+
+      // Function to update all boundaries while excluding the current neighborhood
+      function updateAllBoundaries() {
+        if (!boundariesData) return;
+
+        // Filter out the current neighborhood
+        const otherNeighborhoods = boundariesData.features.filter(
+          (feature) =>
+            currentNeighborhood === null || feature !== currentNeighborhood
+        );
+
+        const otherBoundaries = {
+          type: "FeatureCollection",
+          features: otherNeighborhoods,
+        };
+
+        // Remove the old full boundaries layer
+        if (fullBoundariesLayer) map.removeLayer(fullBoundariesLayer);
+
+        // Add the updated full boundaries layer
+        fullBoundariesLayer = L.geoJSON(otherBoundaries, {
+          style: {
+            fillOpacity: 0.95, // Semi-transparent fill
+            color: "rgb(23, 114, 165)", // Gray border color
+            weight: 2.7, // Border width
+          },
+        }).addTo(map);
+      }
+
+      // Function to check which neighborhood the user is in
+      function detectNeighborhood() {
+        if (!boundariesData) return null;
+
+        const userPoint = turf.point([userCoords.lng, userCoords.lat]);
+
+        for (const feature of boundariesData.features) {
+          if (turf.booleanPointInPolygon(userPoint, feature)) {
+            return feature; // Return the neighborhood the user is in
+          }
+        }
+
+        return null; // No neighborhood found
+      }
+
+      // Function to update the current neighborhood with differences
+      function updateCurrentNeighborhoodWithDifference() {
+        if (!boundariesData || !currentNeighborhood) return;
+
+        let updatedBoundary = currentNeighborhood.geometry;
+
+        exploredAreas.features.forEach((exploredArea) => {
+          const difference = turf.difference(
+            { type: "Feature", geometry: updatedBoundary },
+            { type: "Feature", geometry: exploredArea.geometry }
+          );
+          if (difference) {
+            updatedBoundary = difference.geometry; // Update the boundary with the difference
+          }
+        });
+
+        // Remove the old neighborhood layer
+        if (updatedNeighborhoodLayer) map.removeLayer(updatedNeighborhoodLayer);
+
+        // Add the updated neighborhood layer
+        updatedNeighborhoodLayer = L.geoJSON(
+          { type: "Feature", geometry: updatedBoundary },
+          {
+            style: {
+              fillOpacity: 0.9, // Semi-transparent fill
+              color: "rgb(22, 140, 205)", // Red border color for updated neighborhood
+              weight: 2.9, // Border width
+            },
+          }
+        ).addTo(map);
+      }
+
+      // Function to generate a buffer polygon around the user
+      function generateExplorationPolygon(center, radius) {
+        return turf.circle(center, radius, { units: "meters" });
+      }
+
+      // Function to simplify and maintain exploration areas
+      function simplifyExploredAreas() {
+        if (exploredAreas.features.length === 0) return null;
+
+        let combinedArea = exploredAreas.features.reduce((acc, feature) =>
+          acc ? turf.union(acc, feature) : feature
+        );
+
+        const simplifiedArea = turf.simplify(combinedArea, {
+          tolerance: 0.00005, // Adjusted tolerance for balance
+          highQuality: false,
+        });
+
+        return simplifiedArea;
+      }
+
+      // Function to add an exploration area and update the map
+      function addExploredArea() {
+        const explorationRadius = 40; // Radius in meters
+        const newPolygon = generateExplorationPolygon(
+          [userCoords.lng, userCoords.lat],
+          explorationRadius
+        );
+
+        exploredAreas.features.push({
+          type: "Feature",
+          properties: {},
+          geometry: newPolygon.geometry,
+        });
+
+        // Combine and simplify the explored areas
+        const simplifiedArea = simplifyExploredAreas();
+        if (simplifiedArea) {
+          exploredAreas = {
+            type: "FeatureCollection",
+            features: [simplifiedArea],
+          };
+        }
+
+        // Update the exploration trail
+        explorationLayer.clearLayers();
+        explorationLayer.addData(exploredAreas);
+
+        // Detect neighborhood
+        const detectedNeighborhood = detectNeighborhood();
+        if (detectedNeighborhood !== currentNeighborhood) {
+          currentNeighborhood = detectedNeighborhood;
+          updateAllBoundaries(); // Update all boundaries when neighborhood changes
+        }
+
+        // Update the current neighborhood with differences
+        updateCurrentNeighborhoodWithDifference();
+        updateExploredPercentage();
+        updateLandmarkIcons();
+        console.log("Current explored areas:", exploredAreas);
+      }
+
+      // Function to update the user's location marker
+      function updateUserLocationMarker() {
+        if (userLocationMarker) map.removeLayer(userLocationMarker);
+        userLocationMarker = L.marker([userCoords.lat, userCoords.lng], {
+          icon: currentLocationIcon,
+        }).addTo(map);
+      }
+
+      // User movement via arrow keys
+      document.addEventListener("keydown", (event) => {
+        const moveStep = 0.0004; // Movement step in degrees
+        switch (event.key) {
+          case "ArrowUp":
+            userCoords.lat += moveStep;
+            break;
+          case "ArrowDown":
+            userCoords.lat -= moveStep;
+            break;
+          case "ArrowLeft":
+            userCoords.lng -= moveStep;
+            break;
+          case "ArrowRight":
+            userCoords.lng += moveStep;
+            break;
+          default:
+            return; // Ignore non-arrow keys
+        }
+
+        console.log("Updated user coordinates:", userCoords);
+        updateUserLocationMarker(); // Update marker
+        map.setView([userCoords.lat, userCoords.lng]); // Center map on user
+        addExploredArea(); // Add the new exploration area
+      });
+
+      // Handle user location detection
+      map.on("locationfound", (e) => {
+        userCoords = { lat: e.latlng.lat, lng: e.latlng.lng };
+        map.setView([userCoords.lat, userCoords.lng], 17); // Center map on user
+        updateUserLocationMarker();
+        addExploredArea();
+        updateExploredPercentage();
+      });
+
+      // Handle location errors
+      map.on("locationerror", (e) => {
+        console.error("Location Access denied or unavailable", e.message);
+      });
+
+      // Trigger location detection
+      map.locate({ setView: true, maxZoom: 18 });
+
+      // Function to calculate the explored percentage of the current neighborhood
+      function updateExploredPercentage() {
+        if (!currentNeighborhood || exploredAreas.features.length === 0) {
+          document.querySelector(".percentage").textContent = "0.00%";
+          document.querySelector(".neighborhood-name").textContent = "Unknown";
+          return;
+        }
+
+        const neighborhoodArea = turf.area(currentNeighborhood); // Total area of the neighborhood
+        const exploredArea = exploredAreas.features.reduce((acc, feature) => {
+          const intersection = turf.intersect(
+            { type: "Feature", geometry: currentNeighborhood.geometry },
+            feature
+          );
+          return acc + (intersection ? turf.area(intersection) : 0);
+        }, 0);
+
+        // Calculate the percentage explored
+        const percentageExplored = (exploredArea / neighborhoodArea) * 100;
+
+        // Update the footer text
+        document.querySelector(".percentage").textContent =
+          percentageExplored.toFixed(2) + "%";
+        document.querySelector(".neighborhood-name").textContent =
+          currentNeighborhood.properties.pri_neigh || "Unknown";
+      }
+
+      function goToLandmarks() {
+        window.location.href = "landmarks.html";
+      }
+
+      function goToLeaderboard() {
+        window.location.href = "leaderboard.html";
+      }
+
+      function goToSettings() {
+        window.location.href = "settings.html";
+      }
+
+      // Function to toggle footer visibility
+      function toggleFooter() {
+        const footer = document.getElementById("footer");
+        const landmarksButton = document.getElementById("landmarks-button");
+        const leaderboardButton = document.getElementById("leaderboard-button");
+
+        footer.classList.toggle("active");
+
+        if (footer.classList.contains("active")) {
+          // Update text and color when footer is expanded
+          landmarksButton.textContent = "8/389 Landmarks";
+          leaderboardButton.textContent = "#87 Leaderboard";
+          landmarksButton.classList.add("navy");
+          leaderboardButton.classList.add("navy");
+        } else {
+          // Revert text and color when footer is collapsed
+          landmarksButton.textContent = "3/13 Landmarks";
+          leaderboardButton.textContent = "#56 Leaderboard";
+          landmarksButton.classList.remove("navy");
+          leaderboardButton.classList.remove("navy");
+        }
+      }
+
+      // Initialize the secondary map
+      var secondaryMap = L.map("secondary-map", {
+        center: [41.856369, -87.72031],
+        zoom: 10,
+        dragging: false,
+        zoomControl: false,
+        scrollWheelZoom: false,
+      });
+
+      L.tileLayer(
+        "https://api.maptiler.com/maps/backdrop/{z}/{x}/{y}.png?key=Z4ewyOYv2NQn29nDtEoJ",
+        {
+          attribution: "",
+        }
+      ).addTo(secondaryMap);
+
+      fetch("Boundaries.geojson")
+        .then((response) => response.json())
+        .then((data) => {
+          var boundariesLayer2 = L.geoJSON(data, {
+            style: function () {
+              return {
+                color: "#0d4d7b",
+                weight: 0.9,
+                opacity: 1,
+                fillOpacity: 0.7,
+              };
+            },
+          }).addTo(secondaryMap);
+        })
+        .catch((error) => console.error("Error loading GeoJSON:", error));
+    </script>
+  </body>
+</html>

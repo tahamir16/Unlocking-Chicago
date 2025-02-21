@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Unlocking Chicago - Launch Page</title>
+    <style>
+      /* Basic reset */
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      /* App container */
+      body,
+      html {
+        font-family: Arial, sans-serif;
+        height: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+
+      .app-container {
+        width: 375px;
+        height: 667px;
+        border: 2px solid #333;
+        border-radius: 20px;
+        background-color: #fff;
+        overflow: hidden;
+        box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
+        position: relative;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        background-image: url("skyline4.jpg"); /* Set background image */
+        background-size: cover; /* Make image cover the entire viewport */
+        background-position: center; /* Center the image */
+        background-attachment: fixed;
+      }
+
+      /* Header */
+      .header {
+        position: absolute;
+        top: 360px;
+        left: 20px; /* Move header content to the left */
+        text-align: left;
+        color: #ffffff;
+      }
+
+      .header .hello {
+        font-size: 36px;
+        font-weight: bold;
+        line-height: 1;
+        text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.7); /* Text shadow */
+      }
+
+      .header .welcome {
+        font-size: 18px;
+        font-weight: normal;
+        line-height: 1.2;
+        text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.7); /* Text shadow */
+      }
+
+      /* Footer with form */
+      .footer {
+        height: 200px;
+        background-color: #e9e9e9;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-evenly;
+        align-items: center;
+        position: absolute;
+        bottom: 0px;
+        width: 100%;
+        border-radius: 20px 20px 0 0;
+        box-shadow: 0px -8px 16px rgba(0, 0, 0, 0.5); /* Footer shadow */
+      }
+
+      .input-field {
+        width: 85%;
+        height: 40px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        padding-left: 10px;
+        font-size: 16px;
+        outline: none;
+      }
+
+      .button-container {
+        display: flex;
+        width: 85%;
+        justify-content: space-between;
+      }
+
+      .button {
+        width: 48%;
+        height: 45px;
+        background-color: #168ce1;
+        color: white;
+        font-size: 16px;
+        font-weight: bold;
+        border: none;
+        border-radius: 10px;
+        cursor: pointer;
+        text-align: center;
+      }
+
+      #createAccount {
+        background-color: #e9e9e9;
+        color: #168ce1;
+        border-style: solid;
+        border-width: 3px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="app-container">
+      <!-- Header -->
+      <div class="header">
+        <div class="hello">Hello,</div>
+        <div class="welcome">
+          Welcome to<br />
+          Unlocking Chicago
+        </div>
+      </div>
+
+      <!-- Footer for Sign In Form -->
+      <div class="footer" id="footer">
+        <input
+          type="text"
+          placeholder="Username"
+          class="input-field"
+          id="username"
+        />
+        <input
+          type="password"
+          placeholder="Password"
+          class="input-field"
+          id="password"
+        />
+
+        <div class="button-container">
+          <button class="button" onclick="redirect()">Sign In</button>
+          <button class="button" id="createAccount" onclick="redirect()">
+            Create Account
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      // Redirect function for buttons
+      function redirect() {
+        window.location.href = "index.html";
+      }
+    </script>
+  </body>
+</html>
